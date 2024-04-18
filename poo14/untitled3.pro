@@ -1,5 +1,5 @@
 QT += core gui widgets
-
+QT += core gui network
 SOURCES += \
     formulario.cpp \
     log.cpp \
