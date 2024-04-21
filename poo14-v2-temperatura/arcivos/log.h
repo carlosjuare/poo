@@ -1,3 +1,4 @@
+// log.h
 #ifndef LOG_H
 #define LOG_H
 
@@ -8,7 +9,10 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QNetworkAccessManager>
+#include <QNetworkRequest>
 #include <QNetworkReply>
+
+#include <QUrl>
 #include <QJsonObject>
 #include <QJsonDocument>
 
@@ -25,10 +29,8 @@ public slots:
     void getWeather();
     void weatherReply(QNetworkReply *reply);
     void toggleTemperature();
-protected:
-    void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
-
+    void descargaimg(QNetworkReply*reply);
+     void cambiarFondo();
 
 private:
     QLabel *nombre;
@@ -39,15 +41,21 @@ private:
     QPushButton *botontemp;
     QGridLayout *pantalla;
 
+    QPushButton *cambiarFondoBtn; // Nuevo botón para cambiar el fondo
+    QLineEdit *urlImagen;
+
     QString correctPassword = "1111";
 
     QLabel *temperatureLabel;
     QNetworkAccessManager *manager;
+    QNetworkAccessManager *descargaimagen;
+    QImage im;
+protected:
+   void paintEvent(QPaintEvent *);
 
-    QImage backgroundImage;
-    qreal scaleFactor;
 
-     void scaleBackgroundImage();
 };
 
 #endif // LOG_H
+
+

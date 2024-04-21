@@ -1,13 +1,18 @@
+// log.cpp
 #include "log.h"
 #include <QPainter>
+#include <QDebug>
 #include <QResizeEvent>
 
-ven::ven(QWidget *parent) : QWidget(parent) , scaleFactor(1.0) {
+ven::ven(QWidget *parent) : QWidget(parent) {
+
+    descargaimagen = new QNetworkAccessManager(this);
+    connect(descargaimagen, SIGNAL(finished(QNetworkReply*)), this, SLOT(descargaimg(QNetworkReply*)));
+
+
+
 
     setWindowTitle("ventana");
-
-
-    backgroundImage.load("D:/archivos-poo/poo-main/poo14-v2-temperatura/imagen/lapiz.jpg");
 
     nombre = new QLabel("nombre");
     Enombre = new QLineEdit;
@@ -18,6 +23,12 @@ ven::ven(QWidget *parent) : QWidget(parent) , scaleFactor(1.0) {
     boton = new QPushButton("Iniciar sesión");
     botontemp = new QPushButton("Mostrar/Ocultar temperatura");
 
+    cambiarFondoBtn = new QPushButton("Cambiar Fondo"); // Nuevo botón para cambiar el fondo
+    urlImagen = new QLineEdit; // Nuevo campo de texto para ingresar la URL de la imagen
+    urlImagen->setPlaceholderText("Ingrese URL de la imagen");
+
+
+
     pantalla = new QGridLayout(this);
     pantalla->addWidget(nombre, 0, 0);
     pantalla->addWidget(Enombre, 0, 1);
@@ -26,11 +37,17 @@ ven::ven(QWidget *parent) : QWidget(parent) , scaleFactor(1.0) {
     pantalla->addWidget(botontemp, 2, 0); // Botón para mostrar/ocultar temperatura
     pantalla->addWidget(boton, 3, 0); // Botón para iniciar sesión
 
+    pantalla->addWidget(urlImagen, 4, 0, 1, 2); // Campo de texto para ingresar la URL de la imagen
+    pantalla->addWidget(cambiarFondoBtn, 5, 0, 1, 2); // Nuevo botón para cambiar el fondo
+
+
+
     temperatureLabel = new QLabel("Temperatura de Córdoba: Cargando...");
     pantalla->addWidget(temperatureLabel, 2, 1); // Etiqueta de temperatura
 
     connect(boton, &QPushButton::clicked, this, &ven::checkPassword);
     connect(botontemp, &QPushButton::clicked, this, &ven::toggleTemperature);
+     connect(cambiarFondoBtn, &QPushButton::clicked, this, &ven::cambiarFondo); // Conectar el nuevo botón
 
     // Inicialmente obtener la temperatura
     getWeather();
@@ -59,6 +76,8 @@ void ven::getWeather() {
     manager->get(QNetworkRequest(url));
 }
 
+
+
 void ven::weatherReply(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray responseData = reply->readAll();
@@ -78,19 +97,42 @@ void ven::toggleTemperature() {
     temperatureLabel->setVisible(!temperatureLabel->isVisible());
 }
 
-void ven::paintEvent(QPaintEvent *event) {
+
+
+
+void ven::descargaimg(QNetworkReply *reply) {
+    if (reply->error() != QNetworkReply::NoError) {
+        qDebug() << "Error al descargar la imagen:" << reply->errorString();
+        reply->deleteLater();
+        return;
+    }
+
+    im = QImage::fromData(reply->readAll());
+    if (im.isNull()) {
+        qDebug() << "Error: Los datos descargados no forman una imagen válida";
+        reply->deleteLater();
+        return;
+    }
+
+    reply->deleteLater();
+    update(); // Actualiza la interfaz de usuario para mostrar la imagen
+}
+
+
+
+void ven::paintEvent(QPaintEvent *) {
     QPainter painter(this);
-    painter.drawImage(rect(), backgroundImage);
+    if (!im.isNull()) {
+        painter.setRenderHint(QPainter::SmoothPixmapTransform);
+        painter.drawImage(rect(), im, im.rect());
+    }
 }
 
-void ven::resizeEvent(QResizeEvent *event) {
-    scaleBackgroundImage();
-    QWidget::resizeEvent(event);
+void ven::cambiarFondo() {
+    QUrl imageUrl(urlImagen->text());
+    QNetworkRequest request(imageUrl);
+    descargaimagen->get(request);
 }
 
-void ven::scaleBackgroundImage() {
-    qreal widthRatio = static_cast<qreal>(width()) / backgroundImage.width();
-    qreal heightRatio = static_cast<qreal>(height()) / backgroundImage.height();
-    scaleFactor = qMax(widthRatio, heightRatio);
-    update();
-}
+
+
