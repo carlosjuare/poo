@@ -1,4 +1,3 @@
-// log.h
 #ifndef LOG_H
 #define LOG_H
 
@@ -11,12 +10,14 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-
 #include <QUrl>
 #include <QJsonObject>
 #include <QJsonDocument>
-
+#include <QDateTime>
+#include <QTimer>
 #include "formulario.h"
+
+class QTimer;
 
 class ven : public QWidget {
     Q_OBJECT
@@ -30,8 +31,12 @@ public slots:
     void weatherReply(QNetworkReply *reply);
     void toggleTemperature();
     void descargaimg(QNetworkReply*reply);
-     void cambiarFondo();
-
+    void cambiarFondo();
+   void bloquearUsuario();
+   void desbloquearUsuario();
+   void updateTime();
+   void bloquearClave();
+   void desbloquearClave();
 private:
     QLabel *nombre;
     QLineEdit *Enombre;
@@ -40,20 +45,24 @@ private:
     QPushButton *boton;
     QPushButton *botontemp;
     QGridLayout *pantalla;
-
-    QPushButton *cambiarFondoBtn; // Nuevo botón para cambiar el fondo
+    QPushButton *cambiarFondoBtn;
     QLineEdit *urlImagen;
-
     QString correctPassword = "1111";
+    QString correctUsuario = "nahuel";
+    int intentosFallidos = 0;
+    int intentosUsuario = 0;
+    QTimer *bloqueoUsuarioTimer;
 
     QLabel *temperatureLabel;
     QNetworkAccessManager *manager;
     QNetworkAccessManager *descargaimagen;
     QImage im;
+    QTimer *timer;
+    QDateTime horaguardada;
+    QLabel *ttime;
+
 protected:
-   void paintEvent(QPaintEvent *);
-
-
+    void paintEvent(QPaintEvent *);
 };
 
 #endif // LOG_H

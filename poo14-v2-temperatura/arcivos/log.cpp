@@ -5,12 +5,8 @@
 #include <QResizeEvent>
 
 ven::ven(QWidget *parent) : QWidget(parent) {
-
     descargaimagen = new QNetworkAccessManager(this);
     connect(descargaimagen, SIGNAL(finished(QNetworkReply*)), this, SLOT(descargaimg(QNetworkReply*)));
-
-
-
 
     setWindowTitle("ventana");
 
@@ -23,52 +19,99 @@ ven::ven(QWidget *parent) : QWidget(parent) {
     boton = new QPushButton("Iniciar sesión");
     botontemp = new QPushButton("Mostrar/Ocultar temperatura");
 
-    cambiarFondoBtn = new QPushButton("Cambiar Fondo"); // Nuevo botón para cambiar el fondo
-    urlImagen = new QLineEdit; // Nuevo campo de texto para ingresar la URL de la imagen
+    cambiarFondoBtn = new QPushButton("Cambiar Fondo");
+    urlImagen = new QLineEdit;
     urlImagen->setPlaceholderText("Ingrese URL de la imagen");
 
-
+    ttime = new QLabel();
+    ttime->setText("Hora actual: ");
 
     pantalla = new QGridLayout(this);
     pantalla->addWidget(nombre, 0, 0);
     pantalla->addWidget(Enombre, 0, 1);
     pantalla->addWidget(clave, 1, 0);
     pantalla->addWidget(Eclave, 1, 1);
-    pantalla->addWidget(botontemp, 2, 0); // Botón para mostrar/ocultar temperatura
-    pantalla->addWidget(boton, 3, 0); // Botón para iniciar sesión
+    pantalla->addWidget(botontemp, 2, 0);
+    pantalla->addWidget(boton, 3, 0);
 
-    pantalla->addWidget(urlImagen, 4, 0, 1, 2); // Campo de texto para ingresar la URL de la imagen
-    pantalla->addWidget(cambiarFondoBtn, 5, 0, 1, 2); // Nuevo botón para cambiar el fondo
+    pantalla->addWidget(urlImagen, 4, 0, 1, 2);
+    pantalla->addWidget(cambiarFondoBtn, 5, 0, 1, 2);
 
-
+    pantalla->addWidget(ttime, 0, 3);
 
     temperatureLabel = new QLabel("Temperatura de Córdoba: Cargando...");
-    pantalla->addWidget(temperatureLabel, 2, 1); // Etiqueta de temperatura
+    pantalla->addWidget(temperatureLabel, 2, 1);
 
     connect(boton, &QPushButton::clicked, this, &ven::checkPassword);
     connect(botontemp, &QPushButton::clicked, this, &ven::toggleTemperature);
-     connect(cambiarFondoBtn, &QPushButton::clicked, this, &ven::cambiarFondo); // Conectar el nuevo botón
+    connect(cambiarFondoBtn, &QPushButton::clicked, this, &ven::cambiarFondo);
 
-    // Inicialmente obtener la temperatura
-    getWeather();
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &ven::updateTime);
+    timer->start(1000);
+
+    bloqueoUsuarioTimer = new QTimer(this);
+    connect(bloqueoUsuarioTimer, &QTimer::timeout, this, &ven::desbloquearUsuario);
+    bloqueoUsuarioTimer->setSingleShot(true);
 }
 
 void ven::checkPassword() {
+    QString enteredUsuario = Enombre->text();
     QString enteredPassword = Eclave->text();
-    if (enteredPassword == correctPassword) {
+
+    if (enteredUsuario == correctUsuario && enteredPassword == correctPassword) {
+        if (enteredUsuario == correctUsuario) {
+            intentosUsuario = 0;
+        }
+        intentosFallidos = 0;
         this->close();
-        Formulario *formulario = new Formulario;
-        connect(formulario, &Formulario::contraseaCambiada, this, [this](const QString& nuevaContrasea) {
-            // Actualizar la contraseña correcta con la nueva contraseña ingresada
-            correctPassword = nuevaContrasea;
-            qDebug() << "Contraseña cambiada exitosamente a:" << correctPassword;
-        });
-        formulario->show();
     } else {
-        qDebug() << "Contraseña incorrecta. Acceso denegado.";
+        if (enteredUsuario == correctUsuario) {
+            intentosUsuario++;
+            if (intentosUsuario >= 3) {
+                qDebug() << "Usuario bloqueado. Espere 5 minutos.";
+                bloquearUsuario();
+            }
+        }
+        intentosFallidos++;
+        if (intentosFallidos >= 3) {
+            qDebug() << "Intentos fallidos excedidos. Espere 5 minutos.";
+            bloquearClave();
+        }
     }
 }
 
+void ven::bloquearUsuario() {
+    bloqueoUsuarioTimer->start(300000);
+    boton->setEnabled(false);
+}
+
+void ven::desbloquearUsuario() {
+    intentosUsuario = 0;
+    qDebug() << "Usuario 'nahuel' desbloqueado. Puede intentar iniciar sesión nuevamente.";
+    boton->setEnabled(true);
+}
+
+void ven::updateTime() {
+    QDateTime currentTime = QDateTime::currentDateTime();
+    QString formattedTime = currentTime.toString("hh:mm:ss");
+    ttime->setText("Hora actual: " + formattedTime);
+}
+void ven::bloquearClave() {
+    qDebug() << "Intentos fallidos excedidos. Espere 5 minutos.";
+
+    // Bloquear el inicio de sesión deshabilitando el botón
+    boton->setEnabled(false);
+
+    // Iniciar un temporizador para desbloquear el inicio de sesión después de 5 minutos
+    QTimer::singleShot(300000, this, &ven::desbloquearClave);
+}
+void ven::desbloquearClave() {
+    qDebug() << "Inicio de sesión desbloqueado. Puede intentar iniciar sesión nuevamente.";
+
+    // Habilitar el botón de inicio de sesión
+    boton->setEnabled(true);
+}
 void ven::getWeather() {
     manager = new QNetworkAccessManager(this);
     connect(manager, &QNetworkAccessManager::finished, this, &ven::weatherReply);
@@ -133,6 +176,4 @@ void ven::cambiarFondo() {
     QNetworkRequest request(imageUrl);
     descargaimagen->get(request);
 }
-
-
 
