@@ -8,6 +8,7 @@
 #include <QString>
 #include <QDebug>
 #include <QObject>
+#include <QSqlRecord>
 #include <QSqlQuery>
 
 class adminDB : public QObject {
@@ -18,6 +19,7 @@ public:
     bool conectar(QString archivoSqlite);
     QSqlDatabase getDB();
     void consulta();
+    void validar();
 
 private:
     QSqlDatabase db;

@@ -1,6 +1,6 @@
 #ifndef LOG_H
 #define LOG_H
-
+#include<QMessageBox>
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -16,6 +16,7 @@
 #include <QDateTime>
 #include <QTimer>
 #include "formulario.h"
+#include"admindb.h"
 
 class QTimer;
 
@@ -26,7 +27,7 @@ public:
     ven(QWidget *parent = nullptr);
 
 public slots:
-    void checkPassword();
+
     void getWeather();
     void weatherReply(QNetworkReply *reply);
     void toggleTemperature();
@@ -37,6 +38,8 @@ public slots:
    void updateTime();
    void bloquearClave();
    void desbloquearClave();
+   void slot_validar();
+
 private:
     QLabel *nombre;
     QLineEdit *Enombre;
@@ -60,6 +63,8 @@ private:
     QTimer *timer;
     QDateTime horaguardada;
     QLabel *ttime;
+    adminDB datbase;
+    Formulario form;
 
 protected:
     void paintEvent(QPaintEvent *);

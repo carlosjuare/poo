@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_ven_t {
     QByteArrayData data[15];
-    char stringdata0[184];
+    char stringdata0[183];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,28 +33,28 @@ struct qt_meta_stringdata_ven_t {
 static const qt_meta_stringdata_ven_t qt_meta_stringdata_ven = {
     {
 QT_MOC_LITERAL(0, 0, 3), // "ven"
-QT_MOC_LITERAL(1, 4, 13), // "checkPassword"
-QT_MOC_LITERAL(2, 18, 0), // ""
-QT_MOC_LITERAL(3, 19, 10), // "getWeather"
-QT_MOC_LITERAL(4, 30, 12), // "weatherReply"
-QT_MOC_LITERAL(5, 43, 14), // "QNetworkReply*"
-QT_MOC_LITERAL(6, 58, 5), // "reply"
-QT_MOC_LITERAL(7, 64, 17), // "toggleTemperature"
-QT_MOC_LITERAL(8, 82, 11), // "descargaimg"
-QT_MOC_LITERAL(9, 94, 12), // "cambiarFondo"
-QT_MOC_LITERAL(10, 107, 15), // "bloquearUsuario"
-QT_MOC_LITERAL(11, 123, 18), // "desbloquearUsuario"
-QT_MOC_LITERAL(12, 142, 10), // "updateTime"
-QT_MOC_LITERAL(13, 153, 13), // "bloquearClave"
-QT_MOC_LITERAL(14, 167, 16) // "desbloquearClave"
+QT_MOC_LITERAL(1, 4, 10), // "getWeather"
+QT_MOC_LITERAL(2, 15, 0), // ""
+QT_MOC_LITERAL(3, 16, 12), // "weatherReply"
+QT_MOC_LITERAL(4, 29, 14), // "QNetworkReply*"
+QT_MOC_LITERAL(5, 44, 5), // "reply"
+QT_MOC_LITERAL(6, 50, 17), // "toggleTemperature"
+QT_MOC_LITERAL(7, 68, 11), // "descargaimg"
+QT_MOC_LITERAL(8, 80, 12), // "cambiarFondo"
+QT_MOC_LITERAL(9, 93, 15), // "bloquearUsuario"
+QT_MOC_LITERAL(10, 109, 18), // "desbloquearUsuario"
+QT_MOC_LITERAL(11, 128, 10), // "updateTime"
+QT_MOC_LITERAL(12, 139, 13), // "bloquearClave"
+QT_MOC_LITERAL(13, 153, 16), // "desbloquearClave"
+QT_MOC_LITERAL(14, 170, 12) // "slot_validar"
 
     },
-    "ven\0checkPassword\0\0getWeather\0"
-    "weatherReply\0QNetworkReply*\0reply\0"
-    "toggleTemperature\0descargaimg\0"
-    "cambiarFondo\0bloquearUsuario\0"
+    "ven\0getWeather\0\0weatherReply\0"
+    "QNetworkReply*\0reply\0toggleTemperature\0"
+    "descargaimg\0cambiarFondo\0bloquearUsuario\0"
     "desbloquearUsuario\0updateTime\0"
-    "bloquearClave\0desbloquearClave"
+    "bloquearClave\0desbloquearClave\0"
+    "slot_validar"
 };
 #undef QT_MOC_LITERAL
 
@@ -73,10 +73,10 @@ static const uint qt_meta_data_ven[] = {
 
  // slots: name, argc, parameters, tag, flags
        1,    0,   69,    2, 0x0a /* Public */,
-       3,    0,   70,    2, 0x0a /* Public */,
-       4,    1,   71,    2, 0x0a /* Public */,
-       7,    0,   74,    2, 0x0a /* Public */,
-       8,    1,   75,    2, 0x0a /* Public */,
+       3,    1,   70,    2, 0x0a /* Public */,
+       6,    0,   73,    2, 0x0a /* Public */,
+       7,    1,   74,    2, 0x0a /* Public */,
+       8,    0,   77,    2, 0x0a /* Public */,
        9,    0,   78,    2, 0x0a /* Public */,
       10,    0,   79,    2, 0x0a /* Public */,
       11,    0,   80,    2, 0x0a /* Public */,
@@ -86,10 +86,10 @@ static const uint qt_meta_data_ven[] = {
 
  // slots: parameters
     QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 4,    5,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 5,    6,
+    QMetaType::Void, 0x80000000 | 4,    5,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 5,    6,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -106,30 +106,30 @@ void ven::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **
         auto *_t = static_cast<ven *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->checkPassword(); break;
-        case 1: _t->getWeather(); break;
-        case 2: _t->weatherReply((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
-        case 3: _t->toggleTemperature(); break;
-        case 4: _t->descargaimg((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
-        case 5: _t->cambiarFondo(); break;
-        case 6: _t->bloquearUsuario(); break;
-        case 7: _t->desbloquearUsuario(); break;
-        case 8: _t->updateTime(); break;
-        case 9: _t->bloquearClave(); break;
-        case 10: _t->desbloquearClave(); break;
+        case 0: _t->getWeather(); break;
+        case 1: _t->weatherReply((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
+        case 2: _t->toggleTemperature(); break;
+        case 3: _t->descargaimg((*reinterpret_cast< QNetworkReply*(*)>(_a[1]))); break;
+        case 4: _t->cambiarFondo(); break;
+        case 5: _t->bloquearUsuario(); break;
+        case 6: _t->desbloquearUsuario(); break;
+        case 7: _t->updateTime(); break;
+        case 8: _t->bloquearClave(); break;
+        case 9: _t->desbloquearClave(); break;
+        case 10: _t->slot_validar(); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 2:
+        case 1:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
                 *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QNetworkReply* >(); break;
             }
             break;
-        case 4:
+        case 3:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:

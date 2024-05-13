@@ -5,6 +5,15 @@
 #include <QResizeEvent>
 
 ven::ven(QWidget *parent) : QWidget(parent) {
+
+
+    if (datbase.conectar( "D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/test.db" ) )
+        qDebug() << "Conexion exitosa";
+    else
+        qDebug() << "Conexion NO exitosa";
+    datbase.consulta();
+
+
     descargaimagen = new QNetworkAccessManager(this);
     connect(descargaimagen, SIGNAL(finished(QNetworkReply*)), this, SLOT(descargaimg(QNetworkReply*)));
 
@@ -42,7 +51,7 @@ ven::ven(QWidget *parent) : QWidget(parent) {
     temperatureLabel = new QLabel("Temperatura de Córdoba: Cargando...");
     pantalla->addWidget(temperatureLabel, 2, 1);
 
-    connect(boton, &QPushButton::clicked, this, &ven::checkPassword);
+    connect(boton, &QPushButton::clicked, this, &ven::slot_validar);
     connect(botontemp, &QPushButton::clicked, this, &ven::toggleTemperature);
     connect(cambiarFondoBtn, &QPushButton::clicked, this, &ven::cambiarFondo);
 
@@ -55,31 +64,58 @@ ven::ven(QWidget *parent) : QWidget(parent) {
     bloqueoUsuarioTimer->setSingleShot(true);
 }
 
-void ven::checkPassword() {
-    QString enteredUsuario = Enombre->text();
-    QString enteredPassword = Eclave->text();
 
-    if (enteredUsuario == correctUsuario && enteredPassword == correctPassword) {
-        if (enteredUsuario == correctUsuario) {
-            intentosUsuario = 0;
-        }
-        intentosFallidos = 0;
-        this->close();
-    } else {
-        if (enteredUsuario == correctUsuario) {
-            intentosUsuario++;
-            if (intentosUsuario >= 3) {
-                qDebug() << "Usuario bloqueado. Espere 5 minutos.";
-                bloquearUsuario();
-            }
-        }
-        intentosFallidos++;
-        if (intentosFallidos >= 3) {
-            qDebug() << "Intentos fallidos excedidos. Espere 5 minutos.";
-            bloquearClave();
-        }
-    }
-}
+void ven::slot_validar(){
+
+    bool usuarioValido = false;
+
+
+
+      if ( datbase.getDB().isOpen() )  {
+          QSqlQuery * query = new QSqlQuery( datbase.getDB() );
+
+          query->exec( "SELECT este, otro FROM usuarios WHERE nombre='" +
+          Enombre->text() + "' AND apellido='" + Eclave->text() + "'" );
+
+          // Si los datos son consistentes, devolverá un único registro.
+          while ( query->next() )  {
+
+              QSqlRecord record = query->record();
+
+              // Obtenemos el número de la columna de los datos que necesitamos.
+              int columnaNombre = record.indexOf( "este" );
+              int columnaApellido = record.indexOf( "otro" );
+
+              // Obtenemos los valores de las columnas.
+              qDebug() << "este=" << query->value( columnaNombre ).toString();
+              qDebug() << "otro=" << query->value( columnaApellido ).toString();
+
+              usuarioValido = true;
+          }
+
+          if ( usuarioValido )  {
+
+
+              this->close();
+                      form.show();
+
+          }else  {
+
+              QMessageBox::critical( this, "Sin permisos", "Usuario inválido" );
+
+
+          }
+
+      }
+
+
+      }
+
+
+
+
+
+
 
 void ven::bloquearUsuario() {
     bloqueoUsuarioTimer->start(300000);

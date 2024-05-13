@@ -26,3 +26,4 @@ void adminDB::consulta()
       }
 }
 
+

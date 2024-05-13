@@ -1,6 +1,5 @@
-QT += core gui widgets sql
-QT += core gui network
-QT += network
+QT += core gui widgets network sql
+
 SOURCES += \
     admindb.cpp \
     formulario.cpp \
