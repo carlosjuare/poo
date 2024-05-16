@@ -19,11 +19,36 @@ QSqlDatabase adminDB::getDB()  {
 
 void adminDB::consulta()
 {
-    QSqlQuery query("SELECT nombre, apellido FROM usuarios", db);
+    QSqlQuery query("SELECT usuario, clave FROM usuarios", db);
 
       while (query.next()) {
           qDebug() << query.value(0).toString() << " " << query.value(1).toString();
       }
 }
+QStringList adminDB::validarUsuario( QString tabla, QString usuario, QString clave )  {
+
+    QStringList datosPersonales;
+
+    if ( ! db.isOpen() )
+        return datosPersonales;
+
+    QSqlQuery * query = new QSqlQuery( db );
+    QString claveMd5 = QCryptographicHash::hash( clave.toUtf8(),
+                                                 QCryptographicHash::Md5 ).toHex();
+
+    query->exec( "SELECT nombre, apellido FROM " +
+                 tabla + " WHERE usuario = '" + usuario +
+                 "' AND clave = '" + claveMd5 + "'" );
+
+    while( query->next() )  {
+        QSqlRecord registro = query->record();
+
+        datosPersonales << query->value( registro.indexOf( "nombre" ) ).toString();
+        datosPersonales << query->value( registro.indexOf( "apellido" ) ).toString();
+    }
+
+    return datosPersonales;
+}
+
 
 

@@ -7,7 +7,7 @@
 ven::ven(QWidget *parent) : QWidget(parent) {
 
 
-    if (datbase.conectar( "D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/test.db" ) )
+    if (datbase.conectar( "D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/Users.db" ) )
         qDebug() << "Conexion exitosa";
     else
         qDebug() << "Conexion NO exitosa";
@@ -31,7 +31,7 @@ ven::ven(QWidget *parent) : QWidget(parent) {
     cambiarFondoBtn = new QPushButton("Cambiar Fondo");
     urlImagen = new QLineEdit;
     urlImagen->setPlaceholderText("Ingrese URL de la imagen");
-
+validar2=new QPushButton("validar 2");
     ttime = new QLabel();
     ttime->setText("Hora actual: ");
 
@@ -42,6 +42,7 @@ ven::ven(QWidget *parent) : QWidget(parent) {
     pantalla->addWidget(Eclave, 1, 1);
     pantalla->addWidget(botontemp, 2, 0);
     pantalla->addWidget(boton, 3, 0);
+    pantalla->addWidget(validar2, 3, 1);
 
     pantalla->addWidget(urlImagen, 4, 0, 1, 2);
     pantalla->addWidget(cambiarFondoBtn, 5, 0, 1, 2);
@@ -52,6 +53,8 @@ ven::ven(QWidget *parent) : QWidget(parent) {
     pantalla->addWidget(temperatureLabel, 2, 1);
 
     connect(boton, &QPushButton::clicked, this, &ven::slot_validar);
+
+
     connect(botontemp, &QPushButton::clicked, this, &ven::toggleTemperature);
     connect(cambiarFondoBtn, &QPushButton::clicked, this, &ven::cambiarFondo);
 
@@ -62,6 +65,8 @@ ven::ven(QWidget *parent) : QWidget(parent) {
     bloqueoUsuarioTimer = new QTimer(this);
     connect(bloqueoUsuarioTimer, &QTimer::timeout, this, &ven::desbloquearUsuario);
     bloqueoUsuarioTimer->setSingleShot(true);
+
+
 }
 
 
@@ -109,7 +114,8 @@ void ven::slot_validar(){
       }
 
 
-      }
+}
+
 
 
 

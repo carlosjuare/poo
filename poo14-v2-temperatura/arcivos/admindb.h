@@ -10,6 +10,8 @@
 #include <QObject>
 #include <QSqlRecord>
 #include <QSqlQuery>
+#include <QCryptographicHash>
+#include <QVector>
 
 class adminDB : public QObject {
     Q_OBJECT
@@ -20,7 +22,8 @@ public:
     QSqlDatabase getDB();
     void consulta();
     void validar();
-
+QStringList validarUsuario( QString tabla, QString usuario, QString clave );
+QVector< QStringList > select( QString comando );
 private:
     QSqlDatabase db;
 };

@@ -40,6 +40,10 @@ public slots:
    void desbloquearClave();
    void slot_validar();
 
+
+
+
+
 private:
     QLabel *nombre;
     QLineEdit *Enombre;
@@ -66,8 +70,13 @@ private:
     adminDB datbase;
     Formulario form;
 
+    QPushButton* validar2;
+
 protected:
     void paintEvent(QPaintEvent *);
+
+
+
 };
 
 #endif // LOG_H
