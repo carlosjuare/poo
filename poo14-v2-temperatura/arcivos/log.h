@@ -39,9 +39,10 @@ public slots:
    void bloquearClave();
    void desbloquearClave();
    void slot_validar();
+   void iniciarSesion();
 
-
-
+signals:
+    void usuarioAutenticado(QString nombreUsuario);
 
 
 private:

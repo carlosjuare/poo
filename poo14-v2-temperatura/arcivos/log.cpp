@@ -7,7 +7,7 @@
 ven::ven(QWidget *parent) : QWidget(parent) {
 
 
-    if (datbase.conectar( "D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/Users.db" ) )
+    if (datbase.conectar( "../Users.db" ) )
         qDebug() << "Conexion exitosa";
     else
         qDebug() << "Conexion NO exitosa";
@@ -53,7 +53,7 @@ validar2=new QPushButton("validar 2");
     pantalla->addWidget(temperatureLabel, 2, 1);
 
     connect(boton, &QPushButton::clicked, this, &ven::slot_validar);
-
+     connect(validar2, &QPushButton::clicked, this, &ven::iniciarSesion);
 
     connect(botontemp, &QPushButton::clicked, this, &ven::toggleTemperature);
     connect(cambiarFondoBtn, &QPushButton::clicked, this, &ven::cambiarFondo);
@@ -114,6 +114,24 @@ void ven::slot_validar(){
       }
 
 
+}
+
+void ven::iniciarSesion()
+{
+    QString nombreUsuario = Enombre->text();
+       QString clave = Eclave->text();
+
+       if (datbase.conectar("../atabase/Users.db")) {
+           QStringList datos = datbase.validarUsuario("usuarios", nombreUsuario, clave);
+           if (!datos.isEmpty()) {
+               emit usuarioAutenticado(nombreUsuario);
+               QMessageBox::information(this, "Inicio de sesión", "Inicio de sesión exitoso.");
+           } else {
+               QMessageBox::warning(this, "Inicio de sesión", "Nombre de usuario o contraseña incorrectos.");
+           }
+       } else {
+           QMessageBox::warning(this, "Error", "No se pudo conectar a la base de datos");
+       }
 }
 
 
