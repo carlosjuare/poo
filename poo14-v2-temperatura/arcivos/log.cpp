@@ -1,4 +1,4 @@
-// log.cpp
+
 #include "log.h"
 #include <QPainter>
 #include <QDebug>
@@ -7,7 +7,7 @@
 ven::ven(QWidget *parent) : QWidget(parent) {
 
 
-    if (datbase.conectar( "../Users.db" ) )
+    if (datbase.conectar( "D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/db2.db" ) )
         qDebug() << "Conexion exitosa";
     else
         qDebug() << "Conexion NO exitosa";
@@ -74,44 +74,43 @@ void ven::slot_validar(){
 
     bool usuarioValido = false;
 
+    if ( datbase.getDB().isOpen() )  {
+        QSqlQuery * query = new QSqlQuery( datbase.getDB() );
+
+        query->exec( "SELECT nombre, apellido FROM usuarios WHERE usuario='" +
+        Enombre->text() + "' AND clave='" + Eclave->text() + "'" );
+
+        // Si los datos son consistentes, devolverá un único registro.
+        while ( query->next() )  {
+
+            QSqlRecord record = query->record();
+
+            // Obtenemos el número de la columna de los datos que necesitamos.
+            int columnaNombre = record.indexOf( "nombre" );
+            int columnaApellido = record.indexOf( "apellido" );
+
+            // Obtenemos los valores de las columnas.
+            qDebug() << "nombre=" << query->value( columnaNombre ).toString();
+            qDebug() << "apellido=" << query->value( columnaApellido ).toString();
+
+            usuarioValido = true;
+        }
+
+        if ( usuarioValido )  {
 
 
-      if ( datbase.getDB().isOpen() )  {
-          QSqlQuery * query = new QSqlQuery( datbase.getDB() );
+            this->close();
+                    form.show();
 
-          query->exec( "SELECT este, otro FROM usuarios WHERE nombre='" +
-          Enombre->text() + "' AND apellido='" + Eclave->text() + "'" );
+        }else  {
 
-          // Si los datos son consistentes, devolverá un único registro.
-          while ( query->next() )  {
-
-              QSqlRecord record = query->record();
-
-              // Obtenemos el número de la columna de los datos que necesitamos.
-              int columnaNombre = record.indexOf( "este" );
-              int columnaApellido = record.indexOf( "otro" );
-
-              // Obtenemos los valores de las columnas.
-              qDebug() << "este=" << query->value( columnaNombre ).toString();
-              qDebug() << "otro=" << query->value( columnaApellido ).toString();
-
-              usuarioValido = true;
-          }
-
-          if ( usuarioValido )  {
+            QMessageBox::critical( this, "Sin permisos", "Usuario inválido" );
 
 
-              this->close();
-                      form.show();
-
-          }else  {
-
-              QMessageBox::critical( this, "Sin permisos", "Usuario inválido" );
+        }
+        }
 
 
-          }
-
-      }
 
 
 }
@@ -121,16 +120,21 @@ void ven::iniciarSesion()
     QString nombreUsuario = Enombre->text();
        QString clave = Eclave->text();
 
-       if (datbase.conectar("../atabase/Users.db")) {
+       qDebug() << "Intentando iniciar sesión para el usuario:" << nombreUsuario;
+
+       if (datbase.conectar("D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/db2.db")) {
+           qDebug() << "Conexión a la base de datos exitosa.";
+           datbase.consulta();
+
            QStringList datos = datbase.validarUsuario("usuarios", nombreUsuario, clave);
            if (!datos.isEmpty()) {
                emit usuarioAutenticado(nombreUsuario);
-               QMessageBox::information(this, "Inicio de sesión", "Inicio de sesión exitoso.");
+               qDebug() << "Inicio de sesión exitoso para el usuario:" << nombreUsuario;
            } else {
-               QMessageBox::warning(this, "Inicio de sesión", "Nombre de usuario o contraseña incorrectos.");
+               qDebug() << "Nombre de usuario o contraseña incorrectos.";
            }
        } else {
-           QMessageBox::warning(this, "Error", "No se pudo conectar a la base de datos");
+           qDebug() << "No se pudo conectar a la base de datos";
        }
 }
 

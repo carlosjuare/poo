@@ -25,30 +25,43 @@ void adminDB::consulta()
           qDebug() << query.value(0).toString() << " " << query.value(1).toString();
       }
 }
-QStringList adminDB::validarUsuario( QString tabla, QString usuario, QString clave )  {
-
+QStringList adminDB::validarUsuario(QString tabla, QString usuario, QString clave) {
     QStringList datosPersonales;
 
-    if ( ! db.isOpen() )
+    if (!db.isOpen())
         return datosPersonales;
 
-    QSqlQuery * query = new QSqlQuery( db );
-    QString claveMd5 = QCryptographicHash::hash( clave.toUtf8(),
-                                                 QCryptographicHash::Md5 ).toHex();
+    QString claveMd5 = QCryptographicHash::hash(clave.toUtf8(), QCryptographicHash::Md5).toHex();
 
-    query->exec( "SELECT nombre, apellido FROM " +
-                 tabla + " WHERE usuario = '" + usuario +
-                 "' AND clave = '" + claveMd5 + "'" );
+    QSqlQuery query(db);
+    query.exec("SELECT nombre, apellido FROM " + tabla + " WHERE usuario = '" + usuario +
+               "' AND clave = '" + claveMd5 + "'");
 
-    while( query->next() )  {
-        QSqlRecord registro = query->record();
-
-        datosPersonales << query->value( registro.indexOf( "nombre" ) ).toString();
-        datosPersonales << query->value( registro.indexOf( "apellido" ) ).toString();
+    if (query.next()) {
+        datosPersonales << query.value("nombre").toString();
+        datosPersonales << query.value("apellido").toString();
     }
 
     return datosPersonales;
 }
 
+QVector<QStringList> adminDB::select(QString comando) {
+    QVector<QStringList> resultados;
 
+    if (!db.isOpen())
+        return resultados;
 
+    QSqlQuery consulta(db);
+    consulta.exec(comando);
+
+    while (consulta.next()) {
+        QStringList registro;
+        int numCampos = consulta.record().count();
+        for (int i = 0; i < numCampos; ++i) {
+            registro << consulta.value(i).toString();
+        }
+        resultados.append(registro);
+    }
+
+    return resultados;
+}
