@@ -130,6 +130,8 @@ void ven::iniciarSesion()
            if (!datos.isEmpty()) {
                emit usuarioAutenticado(nombreUsuario);
                qDebug() << "Inicio de sesión exitoso para el usuario:" << nombreUsuario;
+               this->close();
+                       form.show();
            } else {
                qDebug() << "Nombre de usuario o contraseña incorrectos.";
            }
