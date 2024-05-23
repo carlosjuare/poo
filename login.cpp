@@ -43,34 +43,12 @@ void Login::consulta()
     db.close();
 }
 
-void Login::iniciar_secion()
-{
-    QString usuario = ui->user->text();
-    QString clave = ui->key->text();
+void Login::iniciar_secion() {
 
-    if (conectar("C:/Users/Lab/Desktop/ccontenedorapoo21/db2.db")) {
-        QSqlQuery query(db);
+     this->hide();
+    ventanilla->setLogin(this);
+    ventanilla->show();
 
-        query.prepare("SELECT nombre, apellido FROM usuarios WHERE usuario = :usuario AND clave = :clave");
-        query.bindValue(":usuario", usuario);
-        query.bindValue(":clave", QCryptographicHash::hash(clave.toUtf8(), QCryptographicHash::Md5).toHex());
-
-        if (query.exec() && query.next()) {
-            QString nombre = query.value(0).toString();
-            QString apellido = query.value(1).toString();
-
-            qDebug() << "Nombre:" << nombre << ", Apellido:" << apellido;
-            QMessageBox::information(this, "Conexión exitosa", "Usuario válido");
-             db.close();
-            this->hide();
-            ventanilla->setLogin(this);
-            ventanilla->show();
-        } else {
-            QMessageBox::critical(this, "Error de inicio de sesión", "Usuario o contraseña incorrectos");
-        }
-    } else {
-        QMessageBox::critical(this, "Error de conexión", "No se pudo conectar a la base de datos");
-    }
 
 
 }
