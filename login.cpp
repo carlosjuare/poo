@@ -40,16 +40,15 @@ void Login::consulta()
     while (query.next()) {
         qDebug() << query.value(0).toString() << " " << query.value(1).toString();
     }
+    db.close();
 }
 
 void Login::iniciar_secion()
 {
     QString usuario = ui->user->text();
     QString clave = ui->key->text();
-    QSqlDatabase db = getDB();
 
     if (conectar("C:/Users/Lab/Desktop/ccontenedorapoo21/db2.db")) {
-        consulta();
         QSqlQuery query(db);
 
         query.prepare("SELECT nombre, apellido FROM usuarios WHERE usuario = :usuario AND clave = :clave");
@@ -62,6 +61,7 @@ void Login::iniciar_secion()
 
             qDebug() << "Nombre:" << nombre << ", Apellido:" << apellido;
             QMessageBox::information(this, "Conexión exitosa", "Usuario válido");
+             db.close();
             this->hide();
             ventanilla->setLogin(this);
             ventanilla->show();
@@ -71,5 +71,6 @@ void Login::iniciar_secion()
     } else {
         QMessageBox::critical(this, "Error de conexión", "No se pudo conectar a la base de datos");
     }
-}
 
+
+}
