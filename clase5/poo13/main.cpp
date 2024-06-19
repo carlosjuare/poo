@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
     QApplication a(argc, argv);
 
-    QWidget *ventana = new QWidget;  // Es la ventana padre (principal)
+    QWidget *ventana = new QWidget;
     ventana->resize(300, 50);
 
     QSpinBox *spinBox = new QSpinBox;
@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
     spinBox->setRange(0, 100);
     slider->setRange(0, 100);
 
-    // Conexión de la señal valueChanged del QSpinBox y del QSlider a la actualización del título
+
     QObject::connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged), [=](int value){
         ventana->setWindowTitle("Volumen: " + QString::number(value));
     });
