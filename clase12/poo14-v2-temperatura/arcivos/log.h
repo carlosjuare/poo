@@ -1,6 +1,6 @@
-#ifndef LOG_H
-#define LOG_H
-#include<QMessageBox>
+#ifndef LOGIN_H
+#define LOGIN_H
+
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -8,42 +8,44 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QNetworkAccessManager>
-#include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QUrl>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QDateTime>
 #include <QTimer>
+#include <QMessageBox>
 #include "formulario.h"
-#include"admindb.h"
+#include "admindb.h"
 
 class QTimer;
 
-class ven : public QWidget {
+class Login : public QWidget {
     Q_OBJECT
 
 public:
-    ven(QWidget *parent = nullptr);
-
-public slots:
-
-    void getWeather();
-    void weatherReply(QNetworkReply *reply);
-    void toggleTemperature();
-    void descargaimg(QNetworkReply*reply);
-    void cambiarFondo();
-   void bloquearUsuario();
-   void desbloquearUsuario();
-   void updateTime();
-   void bloquearClave();
-   void desbloquearClave();
-   void slot_validar();
-   void iniciarSesion();
+    Login(QWidget *parent = nullptr);
 
 signals:
     void usuarioAutenticado(QString nombreUsuario);
 
+private slots:
+    void getWeather();
+    void weatherReply(QNetworkReply *reply);
+    void toggleTemperature();
+    void descargaimg(QNetworkReply *reply);
+    void cambiarFondo();
+    void bloquearUsuario();
+    void desbloquearUsuario();
+    void updateTime();
+    void bloquearClave();
+    void desbloquearClave();
+    void slot_validar();
+    void iniciarSesion();
+    void validar3();
+
+protected:
+    void paintEvent(QPaintEvent *);
 
 private:
     QLabel *nombre;
@@ -70,16 +72,10 @@ private:
     QLabel *ttime;
     adminDB datbase;
     Formulario form;
-
-    QPushButton* validar2;
-
-protected:
-    void paintEvent(QPaintEvent *);
-
-
-
+    QPushButton *validar2;
+    QPushButton *valdar3;
 };
 
-#endif // LOG_H
+#endif // LOGIN_H
 
 

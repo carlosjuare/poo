@@ -22,11 +22,10 @@ public:
     QSqlDatabase getDB();
     void consulta();
 
+    QStringList validarUsuario(QString tabla, QString usuario, QString clave);
+    QVector<QStringList> select(QString comando);
 
-  QStringList validarUsuario(QString tabla, QString usuario, QString clave);
-  QVector<QStringList> select(QString comando);
 private:
     QSqlDatabase db;
 };
-
 #endif // ADMINDB_H

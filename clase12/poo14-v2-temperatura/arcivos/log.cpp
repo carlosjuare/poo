@@ -4,15 +4,12 @@
 #include <QDebug>
 #include <QResizeEvent>
 
-ven::ven(QWidget *parent) : QWidget(parent) {
-
-
-    if (datbase.conectar( "D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/db2.db" ) )
+Login::Login(QWidget *parent) : QWidget(parent) {
+    if (datbase.conectar("D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/db2.db"))
         qDebug() << "Conexion exitosa";
     else
         qDebug() << "Conexion NO exitosa";
     datbase.consulta();
-
 
     descargaimagen = new QNetworkAccessManager(this);
     connect(descargaimagen, SIGNAL(finished(QNetworkReply*)), this, SLOT(descargaimg(QNetworkReply*)));
@@ -31,7 +28,9 @@ ven::ven(QWidget *parent) : QWidget(parent) {
     cambiarFondoBtn = new QPushButton("Cambiar Fondo");
     urlImagen = new QLineEdit;
     urlImagen->setPlaceholderText("Ingrese URL de la imagen");
-validar2=new QPushButton("validar 2");
+    validar2 = new QPushButton("validar 2");
+    valdar3 = new QPushButton("validar 3"); // Botón para validar con credenciales fijas
+
     ttime = new QLabel();
     ttime->setText("Hora actual: ");
 
@@ -43,151 +42,153 @@ validar2=new QPushButton("validar 2");
     pantalla->addWidget(botontemp, 2, 0);
     pantalla->addWidget(boton, 3, 0);
     pantalla->addWidget(validar2, 3, 1);
-
-    pantalla->addWidget(urlImagen, 4, 0, 1, 2);
-    pantalla->addWidget(cambiarFondoBtn, 5, 0, 1, 2);
-
+    pantalla->addWidget(valdar3, 4, 0); // Agregamos el botón validar3
+    pantalla->addWidget(urlImagen, 5, 0, 1, 2);
+    pantalla->addWidget(cambiarFondoBtn, 6, 0, 1, 2);
     pantalla->addWidget(ttime, 0, 3);
 
     temperatureLabel = new QLabel("Temperatura de Córdoba: Cargando...");
     pantalla->addWidget(temperatureLabel, 2, 1);
 
-    connect(boton, &QPushButton::clicked, this, &ven::slot_validar);
-     connect(validar2, &QPushButton::clicked, this, &ven::iniciarSesion);
-
-    connect(botontemp, &QPushButton::clicked, this, &ven::toggleTemperature);
-    connect(cambiarFondoBtn, &QPushButton::clicked, this, &ven::cambiarFondo);
+    connect(boton, SIGNAL(clicked()), this, SLOT(slot_validar()));
+    connect(validar2, SIGNAL(clicked()), this, SLOT(iniciarSesion()));
+    connect(valdar3, SIGNAL(clicked()), this, SLOT(validar3())); // Conectamos el botón validar3
+    connect(botontemp, SIGNAL(clicked()), this, SLOT(toggleTemperature()));
+    connect(cambiarFondoBtn, SIGNAL(clicked()), this, SLOT(cambiarFondo()));
 
     timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &ven::updateTime);
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateTime()));
     timer->start(1000);
 
     bloqueoUsuarioTimer = new QTimer(this);
-    connect(bloqueoUsuarioTimer, &QTimer::timeout, this, &ven::desbloquearUsuario);
+    connect(bloqueoUsuarioTimer, SIGNAL(timeout()), this, SLOT(desbloquearUsuario()));
     bloqueoUsuarioTimer->setSingleShot(true);
-
-
 }
 
-
-void ven::slot_validar(){
-
+void Login::slot_validar()
+{
     bool usuarioValido = false;
 
-    if ( datbase.getDB().isOpen() )  {
-        QSqlQuery * query = new QSqlQuery( datbase.getDB() );
+    if (datbase.getDB().isOpen()) {
+        QSqlQuery query(datbase.getDB());
 
-        query->exec( "SELECT nombre, apellido FROM usuarios WHERE usuario='" +
-        Enombre->text() + "' AND clave='" + Eclave->text() + "'" );
+        QString consulta = "SELECT nombre, apellido FROM datos WHERE usuario = :usuario AND clave = :clave";
+        query.prepare(consulta);
+        query.bindValue(":usuario", Enombre->text());
+        query.bindValue(":clave", Eclave->text());
 
-        // Si los datos son consistentes, devolverá un único registro.
-        while ( query->next() )  {
+        if (query.exec()) {
+            while (query.next()) {
+                QString nombre = query.value("nombre").toString();
+                QString apellido = query.value("apellido").toString();
 
-            QSqlRecord record = query->record();
+                qDebug() << "Nombre:" << nombre << ", Apellido:" << apellido;
+                usuarioValido = true;
+            }
 
-            // Obtenemos el número de la columna de los datos que necesitamos.
-            int columnaNombre = record.indexOf( "nombre" );
-            int columnaApellido = record.indexOf( "apellido" );
-
-            // Obtenemos los valores de las columnas.
-            qDebug() << "nombre=" << query->value( columnaNombre ).toString();
-            qDebug() << "apellido=" << query->value( columnaApellido ).toString();
-
-            usuarioValido = true;
+            if (usuarioValido) {
+                this->close();
+                form.show();
+            } else {
+                QMessageBox::critical(this, "Sin permisos", "Usuario inválido");
+            }
+        } else {
+            qDebug() << "Error al ejecutar la consulta:"  ;
         }
-
-        if ( usuarioValido )  {
-
-
-            this->close();
-                    form.show();
-
-        }else  {
-
-            QMessageBox::critical( this, "Sin permisos", "Usuario inválido" );
-
-
-        }
-        }
-
-
-
-
+    } else {
+        qDebug() << "La base de datos no está abierta.";
+    }
 }
 
-void ven::iniciarSesion()
+void Login::iniciarSesion()
 {
     QString nombreUsuario = Enombre->text();
-       QString clave = Eclave->text();
+    QString clave = Eclave->text();
 
-       qDebug() << "Intentando iniciar sesión para el usuario:" << nombreUsuario;
+    qDebug() << "Intentando iniciar sesión para el usuario:" << nombreUsuario;
 
-       if (datbase.conectar("D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/db2.db")) {
-           qDebug() << "Conexión a la base de datos exitosa.";
-           datbase.consulta();
+    if (datbase.conectar("D:/Usuario Lab/Descargas/poo-main/poo14-v2-temperatura/atabase/db2.db")) {
+        qDebug() << "Conexión a la base de datos exitosa.";
+        datbase.consulta();
 
-           QStringList datos = datbase.validarUsuario("usuarios", nombreUsuario, clave);
-           if (!datos.isEmpty()) {
-               emit usuarioAutenticado(nombreUsuario);
-               qDebug() << "Inicio de sesión exitoso para el usuario:" << nombreUsuario;
-               this->close();
-                       form.show();
-           } else {
-               qDebug() << "Nombre de usuario o contraseña incorrectos.";
-           }
-       } else {
-           qDebug() << "No se pudo conectar a la base de datos";
-       }
+        QStringList datos = datbase.validarUsuario("datos", nombreUsuario, clave);
+        if (!datos.isEmpty()) {
+            emit usuarioAutenticado(nombreUsuario);
+            qDebug() << "Inicio de sesión exitoso para el usuario:" << nombreUsuario;
+            this->close();
+            form.show();
+        } else {
+            qDebug() << "Nombre de usuario o contraseña incorrectos.";
+        }
+    } else {
+        qDebug() << "No se pudo conectar a la base de datos";
+    }
+}
+
+void Login::validar3()
+{
+    QString nombreUsuario = Enombre->text();
+    QString clave = Eclave->text();
+
+    qDebug() << "Intentando iniciar sesión con credenciales fijas para el usuario:" << nombreUsuario;
+
+    if (nombreUsuario == correctUsuario && clave == correctPassword) {
+        qDebug() << "Inicio de sesión exitoso con credenciales fijas para el usuario:" << nombreUsuario;
+        emit usuarioAutenticado(nombreUsuario);
+        this->close();
+        form.show();
+    } else {
+        qDebug() << "Nombre de usuario o contraseña incorrectos con credenciales fijas.";
+        intentosFallidos++;
+        if (intentosFallidos >= 3) {
+            bloquearUsuario();
+        }
+    }
 }
 
 
-
-
-
-
-
-
-void ven::bloquearUsuario() {
+void Login::bloquearUsuario() {
     bloqueoUsuarioTimer->start(300000);
     boton->setEnabled(false);
 }
 
-void ven::desbloquearUsuario() {
+void Login::desbloquearUsuario() {
     intentosUsuario = 0;
     qDebug() << "Usuario 'nahuel' desbloqueado. Puede intentar iniciar sesión nuevamente.";
     boton->setEnabled(true);
 }
 
-void ven::updateTime() {
+void Login::updateTime() {
     QDateTime currentTime = QDateTime::currentDateTime();
     QString formattedTime = currentTime.toString("hh:mm:ss");
     ttime->setText("Hora actual: " + formattedTime);
 }
-void ven::bloquearClave() {
+
+void Login::bloquearClave() {
     qDebug() << "Intentos fallidos excedidos. Espere 5 minutos.";
 
     // Bloquear el inicio de sesión deshabilitando el botón
     boton->setEnabled(false);
 
     // Iniciar un temporizador para desbloquear el inicio de sesión después de 5 minutos
-    QTimer::singleShot(300000, this, &ven::desbloquearClave);
+    QTimer::singleShot(300000, this, SLOT(desbloquearClave()));
 }
-void ven::desbloquearClave() {
+
+void Login::desbloquearClave() {
     qDebug() << "Inicio de sesión desbloqueado. Puede intentar iniciar sesión nuevamente.";
 
     // Habilitar el botón de inicio de sesión
     boton->setEnabled(true);
 }
-void ven::getWeather() {
+
+void Login::getWeather() {
     manager = new QNetworkAccessManager(this);
-    connect(manager, &QNetworkAccessManager::finished, this, &ven::weatherReply);
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(weatherReply(QNetworkReply*)));
     QUrl url("http://api.openweathermap.org/data/2.5/weather?q=Cordoba&appid=1f101cc43962da830035160fe4f2202c");
     manager->get(QNetworkRequest(url));
 }
 
-
-
-void ven::weatherReply(QNetworkReply *reply) {
+void Login::weatherReply(QNetworkReply *reply) {
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray responseData = reply->readAll();
         QJsonDocument json = QJsonDocument::fromJson(responseData);
@@ -202,14 +203,11 @@ void ven::weatherReply(QNetworkReply *reply) {
     reply->deleteLater();
 }
 
-void ven::toggleTemperature() {
+void Login::toggleTemperature() {
     temperatureLabel->setVisible(!temperatureLabel->isVisible());
 }
 
-
-
-
-void ven::descargaimg(QNetworkReply *reply) {
+void Login::descargaimg(QNetworkReply *reply) {
     if (reply->error() != QNetworkReply::NoError) {
         qDebug() << "Error al descargar la imagen:" << reply->errorString();
         reply->deleteLater();
@@ -227,9 +225,7 @@ void ven::descargaimg(QNetworkReply *reply) {
     update(); // Actualiza la interfaz de usuario para mostrar la imagen
 }
 
-
-
-void ven::paintEvent(QPaintEvent *) {
+void Login::paintEvent(QPaintEvent *) {
     QPainter painter(this);
     if (!im.isNull()) {
         painter.setRenderHint(QPainter::SmoothPixmapTransform);
@@ -237,9 +233,8 @@ void ven::paintEvent(QPaintEvent *) {
     }
 }
 
-void ven::cambiarFondo() {
+void Login::cambiarFondo() {
     QUrl imageUrl(urlImagen->text());
     QNetworkRequest request(imageUrl);
     descargaimagen->get(request);
 }
-

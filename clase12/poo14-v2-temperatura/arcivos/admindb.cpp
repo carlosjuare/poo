@@ -2,30 +2,39 @@
 
 adminDB::adminDB()
 {
- db = QSqlDatabase::addDatabase( "QSQLITE" );
+    db = QSqlDatabase::addDatabase("QSQLITE");
 }
-bool adminDB::conectar( QString archivoSqlite )  {
-    db.setDatabaseName( archivoSqlite );
 
-    if( db.open() )
+bool adminDB::conectar(QString archivoSqlite)
+{
+    db.setDatabaseName(archivoSqlite);
+
+    if (db.open())
         return true;
 
     return false;
 }
 
-QSqlDatabase adminDB::getDB()  {
+QSqlDatabase adminDB::getDB()
+{
     return db;
 }
 
 void adminDB::consulta()
 {
-    QSqlQuery query("SELECT usuario, clave FROM usuarios", db);
+    QSqlQuery query("SELECT nombre, apellido, usuario, clave, id FROM datos", db);
 
-      while (query.next()) {
-          qDebug() << query.value(0).toString() << " " << query.value(1).toString();
-      }
+    while (query.next()) {
+        qDebug() << "nombre:" << query.value("nombre").toString()
+                 << "apellido:" << query.value("apellido").toString()
+                 << "usuario:" << query.value("usuario").toString()
+                 << "clave:" << query.value("clave").toString()
+                 << "id:" << query.value("id").toString();
+    }
 }
-QStringList adminDB::validarUsuario(QString tabla, QString usuario, QString clave) {
+
+QStringList adminDB::validarUsuario(QString tabla, QString usuario, QString clave)
+{
     QStringList datosPersonales;
 
     if (!db.isOpen())
@@ -45,7 +54,8 @@ QStringList adminDB::validarUsuario(QString tabla, QString usuario, QString clav
     return datosPersonales;
 }
 
-QVector<QStringList> adminDB::select(QString comando) {
+QVector<QStringList> adminDB::select(QString comando)
+{
     QVector<QStringList> resultados;
 
     if (!db.isOpen())
