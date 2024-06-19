@@ -6,7 +6,6 @@
 #include <QVector>
 #include <QDebug>
 #include <QObject>
-
 #include <QDialog>
 
 namespace Ui {
@@ -20,14 +19,19 @@ class Login : public QDialog
 public:
     explicit Login(QWidget *parent = nullptr);
     ~Login();
-    bool conectar(QString archivoSqlite); // Modificado el prototipo de la función conectar
-       QSqlDatabase getDB();
+    bool conectar(QString archivoSqlite);
+    QSqlDatabase getDB();
 
-public slots:
-void iniciar_secion();
+signals:
+    void accepted();
+
+private slots:
+    void iniciar_secion();
+
 private:
     Ui::Login *ui;
-       QSqlDatabase db;
+    QSqlDatabase db;
+
 };
 
 #endif // LOGIN_H

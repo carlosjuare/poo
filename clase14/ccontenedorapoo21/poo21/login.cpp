@@ -2,7 +2,8 @@
 #include "ui_login.h"
 #include <QCryptographicHash>
 #include <QSqlQuery>
-#include<QMessageBox>
+#include <QMessageBox>
+
 Login::Login(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Login)
@@ -18,13 +19,12 @@ Login::~Login()
 
 bool Login::conectar(QString archivoSqlite)
 {
-
     db.setDatabaseName(archivoSqlite);
 
-      if (db.open())
-          return true;
+    if (db.open())
+        return true;
 
-      return false;
+    return false;
 }
 
 QSqlDatabase Login::getDB()
@@ -33,9 +33,7 @@ QSqlDatabase Login::getDB()
 }
 
 void Login::iniciar_secion()
-
 {
-
     QString usuario = ui->user->text();
     QString clave = ui->key->text();
     QSqlDatabase db = getDB();
@@ -48,6 +46,7 @@ void Login::iniciar_secion()
         query.bindValue(":clave", QCryptographicHash::hash(clave.toUtf8(), QCryptographicHash::Md5).toHex());
 
         if (query.exec() && query.next()) {
+            emit accepted(); // Emitir señal de login exitoso
             QString nombre = query.value(0).toString();
             QString apellido = query.value(1).toString();
 
@@ -60,4 +59,3 @@ void Login::iniciar_secion()
         QMessageBox::critical(this, "Error de conexión", "No se pudo conectar a la base de datos");
     }
 }
-

@@ -1,6 +1,5 @@
 #ifndef VENTANA_H
 #define VENTANA_H
-#include"login.h"
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -19,4 +18,5 @@ private:
     Ui::Ventana *ui;
 
 };
+
 #endif // VENTANA_H

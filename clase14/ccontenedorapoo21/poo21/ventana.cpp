@@ -12,4 +12,3 @@ Ventana::~Ventana()
 {
     delete ui;
 }
-

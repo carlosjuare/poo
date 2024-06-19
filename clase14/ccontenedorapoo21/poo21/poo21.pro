@@ -18,10 +18,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     login.cpp \
     main.cpp \
+    master.cpp \
     ventana.cpp
 
 HEADERS += \
     login.h \
+    master.h \
     ventana.h
 
 FORMS += \
