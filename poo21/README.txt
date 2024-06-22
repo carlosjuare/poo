@@ -12,7 +12,6 @@ abre una ventana con un boton para volver a el login, lo nuevo es la clase maste
 gestionar con show y hide cuando se muestra u ocultan estas ventanas
 
 
-IMPORANTE
-lineas 8 y 55 se ingresa la direccion de la base de datos, en este caso es absoluta
+
 
 
