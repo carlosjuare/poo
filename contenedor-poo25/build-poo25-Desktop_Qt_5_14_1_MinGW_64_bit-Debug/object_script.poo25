@@ -1,0 +1,11 @@
+admindb.o
+ingresarusuario.o
+login.o
+main.o
+master.o
+ventana.o
+moc_admindb.o
+moc_ingresarusuario.o
+moc_login.o
+moc_master.o
+moc_ventana.o
