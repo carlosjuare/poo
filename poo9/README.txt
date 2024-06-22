@@ -1,0 +1,14 @@
+consigna 9
+En un Empty qmake Project
+Crear una función genérica que imprima por consola sus valores ordenados
+Es decir, se le pasa un array con sus valores en cualquier orden, y la función genérica los imprime ordenados
+Que el prototipo sea: template < class T > void imprimir( T * v, int cantidad, bool mayor_a_menor );
+Utilizar el método de ordenamiento por inserción
+Probar esta función en main utilizando dos arrays (int y float) y ordenar de mayor a menor y el otro al revés.
+
+descripcion
+el codigio tiene una funcion generica que rdena valores de menor a mayor de un vector, en este caso valores enteros y float para numeros con coma
+al ejecutarlo se ve asi
+
+Orden ascendente: 1 3 4 6 6 
+Orden descendente: 99.2 54.3 20.1 0.99 0.5 
