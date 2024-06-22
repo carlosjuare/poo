@@ -5,7 +5,7 @@
 #include <QResizeEvent>
 
 Login::Login(QWidget *parent) : QWidget(parent) {
-    if (datbase.conectar("C:/db2.db"))
+    if (datbase.conectar("db2.db"))
         qDebug() << "Conexion exitosa";
     else
         qDebug() << "Conexion NO exitosa";
@@ -68,7 +68,7 @@ void Login::iniciarSesion() {
 
     qDebug() << "Intentando iniciar sesión para el usuario:" << nombreUsuario;
 
-    if (datbase.conectar("C:/db2.db")) {
+    if (datbase.conectar("db2.db")) {
         qDebug() << "Conexión a la base de datos exitosa.";
 
         QStringList datos = datbase.validarUsuario("usuarios", nombreUsuario, claveUsuario);
