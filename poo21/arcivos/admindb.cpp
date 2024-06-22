@@ -1,5 +1,7 @@
 
 #include "admindb.h"
+#include <QCoreApplication>
+#include <QDir>
 adminDB::adminDB()
 {
     db = QSqlDatabase::addDatabase("QSQLITE");
@@ -7,12 +9,23 @@ adminDB::adminDB()
 
 bool adminDB::conectar(QString archivoSqlite)
 {
-    db.setDatabaseName(archivoSqlite);
+    // Obtener el directorio del proyecto
+      QString projectDir = QCoreApplication::applicationDirPath();
 
-    if (db.open())
-        return true;
+      // Construir la ruta completa al archivo de base de datos
+      QString pathToDb = QDir(projectDir).absoluteFilePath("../atabase/db2.db");
 
-    return false;
+      // Establecer el nombre de la base de datos
+      db.setDatabaseName(pathToDb);
+
+      // Intentar abrir la base de datos
+      if (!db.open()) {
+          qDebug() << "Error al abrir la base de datos:" ;
+          return false;
+      }
+
+      qDebug() << "Conexión exitosa";
+      return true;
 }
 
 QSqlDatabase adminDB::getDB()
