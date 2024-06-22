@@ -9,6 +9,3 @@ al ingresar usuario y clave correcta, la clave esta hasheada en la base de datos
 se puede ingresar una clave nueva, solo es visual proque al darle a cmabiar clave se cierra la aplicacion
 si se ingresa erroneamente clave o usuario se bloquea por 5 minutos
 
-IMPORTANTE
-en las lineas 8 y 71 se pide la direccion de la base de datos, es absoluta en este codigo ya que intentando de varias forams no pude hacerla 
-relativa
